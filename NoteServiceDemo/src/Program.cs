@@ -1,10 +1,24 @@
-using NotesService.API;
+var builder = WebApplication.CreateBuilder(args);
 
-// Builds a host and runs the "API" service
-var builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddControllers();
 
-builder.Services.AddHostedService<NotesWorkerService>();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-var host = builder.Build();
+var app = builder.Build();
 
-host.Run();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();

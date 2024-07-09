@@ -2,8 +2,9 @@
 
 namespace NotesService.API.Controllers;
 
+// http://localhost:40381/note
 [ApiController]
-[Route("[controller]")]
+[Route("note")]
 public class NoteController : ControllerBase
 {
     private readonly ILogger<NoteController> _logger;
@@ -13,4 +14,11 @@ public class NoteController : ControllerBase
         _logger = logger;
     }
 
+    // GET: http://localhost:1234/note
+    [HttpGet]
+    public async Task<IActionResult> GetAsync()
+    {
+        //
+        return Ok();
+    }
 }
