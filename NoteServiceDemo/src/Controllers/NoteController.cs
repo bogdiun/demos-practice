@@ -4,7 +4,7 @@ namespace NotesService.API.Controllers;
 
 // http://localhost:40381/note
 [ApiController]
-[Route("note")]
+[Route("notes")]
 public class NoteController : ControllerBase
 {
     private readonly ILogger<NoteController> _logger;
