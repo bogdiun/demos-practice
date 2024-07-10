@@ -1,6 +1,5 @@
-﻿namespace NotesService.API.DataAccess
+﻿namespace NotesService.API.DataAccess;
+
+public interface INoteable
 {
-    public interface INoteable
-    {
-    }
 }
