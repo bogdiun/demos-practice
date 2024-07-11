@@ -1,38 +1,51 @@
-using Microsoft.OpenApi.Models;
 using System.Reflection;
+using Asp.Versioning;
+using Microsoft.Extensions.Options;
+using NotesService.API.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddApiVersioning(c =>
+                {
+                    c.DefaultApiVersion = new ApiVersion(1, 0);
+                    c.AssumeDefaultVersionWhenUnspecified = true;
+                    c.ReportApiVersions = true;
+                })
+                .AddMvc().AddApiExplorer(c =>
+                {
+                    c.GroupNameFormat = "'v'VVV";
+                    c.SubstituteApiVersionInUrl = true;
+                });
+
 builder.Services.AddSwaggerGen(c =>
 {
     string xmlDocFilename = Path.Combine(AppContext.BaseDirectory, Assembly.GetExecutingAssembly().GetName().Name + ".xml");
-    // TODO: Add Security at some point later | AddSecurityDefinition/Requirement
-
     c.IncludeXmlComments(xmlDocFilename);
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Notes Service API (DEMO)",
-        Version = "v1", // TODO make a proper version handling https://www.youtube.com/watch?v=8Asq7ymF1R8
-        Description = "DEMO API for note storage.",
-    });
+    c.OperationFilter<SwaggerDefaultValues>();
+    // TODO: Add Security at some point later | AddSecurityDefinition/Requirement
 });
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-//TODO: might allow in production
 if (app.Environment.IsDevelopment())
 {
+    //TODO: might allow in production, add: c.RoutePrefix = "api/documentation"
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        //c.RoutePrefix = "api/documentation"; // TODO in Production only
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        c.DisplayRequestDuration();
+        foreach (var description in app.DescribeApiVersions())
+        {
+            c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName);
+            c.DisplayRequestDuration();
+        }
     });
 }
 
