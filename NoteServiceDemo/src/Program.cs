@@ -1,16 +1,28 @@
+namespace NotesService.API;
+
 using System.Reflection;
 using Asp.Versioning;
 using Microsoft.Extensions.Options;
 using NotesService.API.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
+public static class Program
+{
+    private static async Task Main(string[] args)
+    {
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 builder.Services.AddEndpointsApiExplorer();
-
+        builder.Services.AddSwaggerGen(c =>
+        {
+            string xmlDocFilename = Path.Combine(AppContext.BaseDirectory, Assembly.GetExecutingAssembly().GetName().Name + ".xml");
+            c.IncludeXmlComments(xmlDocFilename);
+            c.OperationFilter<SwaggerDefaultValues>();
+            // TODO: Add Security at some point later | AddSecurityDefinition/Requirement
+        });
 builder.Services.AddApiVersioning(c =>
                 {
                     c.DefaultApiVersion = new ApiVersion(1, 0);
@@ -41,9 +53,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        foreach (var description in app.DescribeApiVersions())
+                foreach (var verion in app.DescribeApiVersions().Select(d => d.GroupName))
         {
-            c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName);
+                    c.SwaggerEndpoint($"/swagger/{verion}/swagger.json", verion);
             c.DisplayRequestDuration();
         }
     });
@@ -55,6 +67,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+        await app.RunAsync();
+    }
+}
 
 // TODO: hosting https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/?view=aspnetcore-2.1&tabs=aspnetcore2x
