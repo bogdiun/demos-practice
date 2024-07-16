@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoteService.IntegrationTests", "NoteService.IntegrationTests\NoteService.IntegrationTests.csproj", "{E62BF3E8-6FC2-4C46-B305-5B5BF99A574E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,10 @@ Global
 		{7D0583F1-87DA-4298-A42A-019EC2F910B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D0583F1-87DA-4298-A42A-019EC2F910B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D0583F1-87DA-4298-A42A-019EC2F910B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E62BF3E8-6FC2-4C46-B305-5B5BF99A574E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E62BF3E8-6FC2-4C46-B305-5B5BF99A574E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E62BF3E8-6FC2-4C46-B305-5B5BF99A574E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E62BF3E8-6FC2-4C46-B305-5B5BF99A574E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -37,6 +43,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{415E10F7-393E-4EFB-A90E-BBD3D8A798E2} = {4B7943BA-0001-4EEE-A7A4-E8C2F8634871}
 		{7D0583F1-87DA-4298-A42A-019EC2F910B2} = {DAA6127D-A6CD-4A10-93B7-10F11ED56306}
+		{E62BF3E8-6FC2-4C46-B305-5B5BF99A574E} = {4B7943BA-0001-4EEE-A7A4-E8C2F8634871}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {33BC309A-AEF2-4282-8101-399DE090BBD5}
