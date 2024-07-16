@@ -2,10 +2,13 @@ namespace NotesService.API;
 
 using System.Reflection;
 using Asp.Versioning;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NotesService.API.DataAccess;
+using NotesService.API.DTO;
 using NotesService.API.Swagger;
+using NotesService.API.Validators;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 public static class Program
@@ -25,6 +28,8 @@ public static class Program
 
 
         builder.Services.AddControllers();
+        builder.Services.AddScoped<IValidator<NotePostRequest>, NotePostRequestValidator>();
+        //builder.Services.AddFluentValidationAutoValidation();
 
         builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         builder.Services.AddEndpointsApiExplorer();
