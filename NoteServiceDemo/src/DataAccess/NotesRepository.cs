@@ -1,12 +1,13 @@
 ﻿namespace NotesService.API.DataAccess;
 
 using Microsoft.EntityFrameworkCore;
+using NotesService.API;
 using NotesService.API.DataAccess.Models;
 using NotesService.API.DTO;
 
 public class NotesRepository(DataContext dbContext) : INotesRepository
 {
-    public async Task<IList<NoteResponse>> GetAsync(string userId, string? mediaType, string? category)
+    public async Task<IList<NoteResponse>> GetAsync(string? mediaType, string? category)
     {
         return await dbContext.Notes.Select(note => new NoteResponse
         {

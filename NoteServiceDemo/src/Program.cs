@@ -5,7 +5,6 @@ using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NotesService.API.DataAccess;
-using NotesService.API.DTO;
 using NotesService.API.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -21,7 +20,6 @@ public static class Program
         {
             c.UseInMemoryDatabase(builder.Configuration.GetConnectionString("InMemDB"));
             //c.UseSqlite(builder.Configuration.GetConnectionString("SqliteDB"));
-
         });
         builder.Services.AddScoped<INotesRepository, NotesRepository>();
 
@@ -59,9 +57,9 @@ public static class Program
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                foreach (var verion in app.DescribeApiVersions().Select(d => d.GroupName))
+                foreach (var version in app.DescribeApiVersions().Select(d => d.GroupName))
                 {
-                    c.SwaggerEndpoint($"/swagger/{verion}/swagger.json", verion);
+                    c.SwaggerEndpoint($"/swagger/{version}/swagger.json", version);
                     c.DisplayRequestDuration();
                 }
             });

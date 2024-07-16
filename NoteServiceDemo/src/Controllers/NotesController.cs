@@ -2,6 +2,7 @@
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using NotesService.API;
 using NotesService.API.DTO;
 
 [ApiController]
@@ -12,11 +13,13 @@ public class NotesController : ControllerBase
 {
     private readonly ILogger<NotesController> _logger;
     private readonly INotesRepository _notesRepository;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public NotesController(ILogger<NotesController> logger, INotesRepository notesRepository)
+    public NotesController(ILogger<NotesController> logger, INotesRepository notesRepository, IHttpContextAccessor httpContextAccessor)
     {
         _logger = logger;
         _notesRepository = notesRepository;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     /// <summary>
@@ -29,13 +32,12 @@ public class NotesController : ControllerBase
     public async Task<IActionResult> GetAsync([FromQuery] string? mediaType, [FromQuery] string? category)
     {
         // TODO manage users
-        string userId = "dummy";
 
-        IList<NoteResponse> results = await _notesRepository.GetAsync(userId, mediaType, category);
+        IList<NoteResponse> results = await _notesRepository.GetAsync(mediaType, category);
 
         if (results?.Any() != true)
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(results);
@@ -77,8 +79,8 @@ public class NotesController : ControllerBase
             return BadRequest();
         }
 
-        var baseUri = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
-        var createdLocation = $"{baseUri}/{Request.Path.Value}/{postedNote.Id}";
+        var baseUri = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.ToUriComponent()}";
+        var createdLocation = $"{baseUri}/{_httpContextAccessor.HttpContext.Request.Path.Value}/{postedNote.Id}";
 
         return Created(createdLocation, postedNote);
     }
