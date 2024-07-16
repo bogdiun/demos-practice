@@ -1,5 +1,6 @@
 ﻿namespace NotesService.API.DTO;
 
+// TODO: data validation/constraints
 public record NotePostRequest
 {
     public string NoteKey { get; set; }

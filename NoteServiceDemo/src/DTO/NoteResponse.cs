@@ -8,7 +8,7 @@ public record NoteResponse
 
     public string NoteValue { get; set; }
 
-    public string MediaType { get; set; }
+    public IEnumerable<string> Categories { get; set; }
 
-    public List<string> Categories { get; set; }
+    public string MediaType { get; set; }
 }
