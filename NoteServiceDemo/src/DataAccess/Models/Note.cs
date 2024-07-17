@@ -15,5 +15,5 @@ public class Note
 
     required public string MediaType { get; set; }
 
-    public string Categories { get; set; }
+    public string? Categories { get; set; }
 }

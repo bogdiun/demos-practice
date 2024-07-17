@@ -21,8 +21,8 @@ public static class Program
         // TODO later c.UseSQLServer
         builder.Services.AddDbContext<DataContext>(c =>
         {
-            c.UseInMemoryDatabase(builder.Configuration.GetConnectionString("InMemDB"));
-            //c.UseSqlite(builder.Configuration.GetConnectionString("SqliteDB"));
+            //c.UseInMemoryDatabase(builder.Configuration.GetConnectionString("InMemDB"));
+            c.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
         builder.Services.AddScoped<INotesRepository, NotesRepository>();
 
