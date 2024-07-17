@@ -1,6 +1,8 @@
 ﻿namespace NotesService.API.Controllers;
 
+using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using NotesService.API;
 using NotesService.API.DTO;
@@ -13,13 +15,15 @@ public class NotesController : ControllerBase
 {
     private readonly ILogger<NotesController> _logger;
     private readonly INotesRepository _notesRepository;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IValidator<NotePostRequest> _postRequestValidator;
 
-    public NotesController(ILogger<NotesController> logger, INotesRepository notesRepository, IHttpContextAccessor httpContextAccessor)
+    public NotesController(ILogger<NotesController> logger,
+                           INotesRepository notesRepository,
+                           IValidator<NotePostRequest> postRequestValidator)
     {
         _logger = logger;
         _notesRepository = notesRepository;
-        _httpContextAccessor = httpContextAccessor;
+        _postRequestValidator = postRequestValidator;
     }
 
     /// <summary>
@@ -52,7 +56,6 @@ public class NotesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync(int id)
     {
-        // TODO change id to query?
         NoteResponse result = await _notesRepository.GetByIdAsync(id);
 
         if (result == null)
@@ -72,6 +75,13 @@ public class NotesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostAsync([FromBody] NotePostRequest postRequest)
     {
+        var validationResult = _postRequestValidator.Validate(postRequest);
+
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult);
+        }
+
         NoteResponse postedNote = await _notesRepository.AddAsync(postRequest);
 
         if (postedNote == null)
@@ -79,10 +89,8 @@ public class NotesController : ControllerBase
             return BadRequest();
         }
 
-        var baseUri = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.ToUriComponent()}";
-        var createdLocation = $"{baseUri}/{_httpContextAccessor.HttpContext.Request.Path.Value}/{postedNote.Id}";
-
-        return Created(createdLocation, postedNote);
+        // TODO: later adjust it to return full uri, without using HttpContext
+        return Created($"notes/{postedNote.Id}", postedNote);
     }
 
     /// <summary>

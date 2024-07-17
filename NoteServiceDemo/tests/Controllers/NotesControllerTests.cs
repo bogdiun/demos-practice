@@ -1,6 +1,8 @@
 namespace NotesService.Tests.Controllers;
 
 using FakeItEasy;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,7 +15,7 @@ public class NotesControllerTests
 {
     private readonly ILogger<NotesController> _logger;
     private readonly INotesRepository _repository;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IValidator<NotePostRequest> _postValidator;
 
     //System under test
     private readonly NotesController _sut;
@@ -22,8 +24,8 @@ public class NotesControllerTests
     {
         _logger = A.Fake<ILogger<NotesController>>();
         _repository = A.Fake<INotesRepository>();
-        _httpContextAccessor = A.Fake<IHttpContextAccessor>();
-        _sut = new NotesController(_logger, _repository, _httpContextAccessor);
+        _postValidator = A.Fake<IValidator<NotePostRequest>>();
+        _sut = new NotesController(_logger, _repository, _postValidator);
     }
 
 
@@ -119,6 +121,11 @@ public class NotesControllerTests
             MediaType = "text"
         };
 
+        var validationFake = A.Fake<ValidationResult>();
+
+        A.CallTo(() => _postValidator.Validate(note)).Returns(validationFake);
+        A.CallTo(() => validationFake.IsValid).Returns(true);
+
         A.CallTo(() => _repository.AddAsync(note))
          .Returns(new NoteResponse
          {
@@ -131,13 +138,29 @@ public class NotesControllerTests
 
         // Act
         IActionResult result = await _sut.PostAsync(note);
-        var loc = _httpContextAccessor.HttpContext.Response.Headers.Location;
 
         // Assert
         Assert.IsType<CreatedResult>(result);
         Assert.Equal(201, ((CreatedResult)result).StatusCode);
         Assert.IsType<NoteResponse>(((CreatedResult)result).Value);
-        Assert.NotNull(loc);
+    }
+
+    [Fact]
+    public async void Post_OnInvalidRequest_ReturnsStatusCode400()
+    {
+        // Arrange
+        NotePostRequest note = new();
+        var validationFake = A.Fake<ValidationResult>();
+
+        A.CallTo(() => _postValidator.Validate(note)).Returns(validationFake);
+        A.CallTo(() => validationFake.IsValid).Returns(false);
+
+        // Act
+        IActionResult result = await _sut.PostAsync(note);
+
+        // Assert
+        Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal(400, ((BadRequestObjectResult)result).StatusCode);
     }
 
     // TODO: Post Checks if fields valid and returns appropriate status
