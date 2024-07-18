@@ -34,7 +34,7 @@ namespace NotesService.API.DataAccess.Migrations
 
                     b.HasIndex("NotesId");
 
-                    b.ToTable("CategoryNote");
+                    b.ToTable("CategoryNote", (string)null);
                 });
 
             modelBuilder.Entity("NotesService.API.DataAccess.Models.Category", b =>
@@ -52,7 +52,7 @@ namespace NotesService.API.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("NotesService.API.DataAccess.Models.MediaType", b =>
@@ -70,7 +70,7 @@ namespace NotesService.API.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MediaTypes");
+                    b.ToTable("MediaTypes", (string)null);
                 });
 
             modelBuilder.Entity("NotesService.API.DataAccess.Models.Note", b =>
@@ -99,7 +99,7 @@ namespace NotesService.API.DataAccess.Migrations
 
                     b.HasIndex("MediaTypeId");
 
-                    b.ToTable("Notes");
+                    b.ToTable("Notes", (string)null);
                 });
 
             modelBuilder.Entity("CategoryNote", b =>

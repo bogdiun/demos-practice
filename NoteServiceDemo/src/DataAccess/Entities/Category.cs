@@ -1,4 +1,4 @@
-﻿namespace NotesService.API.DataAccess.Models;
+﻿namespace NotesService.API.DataAccess.Entities;
 
 using System.ComponentModel.DataAnnotations;
 
@@ -11,6 +11,5 @@ public class Category
     [MaxLength(50)]
     public string Name { get; set; }
 
-    // navigational property
     public ICollection<Note> Notes { get; set; }
 }

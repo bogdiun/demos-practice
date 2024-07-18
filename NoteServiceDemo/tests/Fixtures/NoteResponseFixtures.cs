@@ -2,7 +2,7 @@
 
 using System;
 using System.Threading.Tasks;
-using NotesService.API.DTO;
+using NotesService.API.Common.DTO.Response;
 
 public static class NoteResponseFixtures
 {

@@ -1,7 +1,6 @@
-﻿namespace NotesService.API.DataAccess.Models;
+﻿namespace NotesService.API.DataAccess.Entities;
 
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 public class MediaType
 {
@@ -11,8 +10,6 @@ public class MediaType
     [Required]
     [MaxLength(50)]
     public string TypeName { get; set; } = null!;
-    // Word, Text,  Audio, Image, ??
 
-    // navigational property
     public ICollection<Note> Notes { get; set; }
 }

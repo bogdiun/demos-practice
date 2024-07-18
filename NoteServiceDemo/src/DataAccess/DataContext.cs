@@ -1,7 +1,7 @@
 ﻿namespace NotesService.API.DataAccess;
 
 using Microsoft.EntityFrameworkCore;
-using NotesService.API.DataAccess.Models;
+using NotesService.API.DataAccess.Entities;
 
 public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
 {

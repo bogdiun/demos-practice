@@ -2,9 +2,10 @@
 
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using NotesService.API;
-using NotesService.API.DataAccess.Models;
-using NotesService.API.DTO;
+using NotesService.API.Common;
+using NotesService.API.Common.DTO.Request;
+using NotesService.API.Common.DTO.Response;
+using NotesService.API.DataAccess.Entities;
 
 public class NotesRepository : INotesRepository
 {
@@ -18,6 +19,7 @@ public class NotesRepository : INotesRepository
     public async Task<IList<NoteResponse>> GetAsync(string? mediaType, string? category)
     {
         // TODO implement pagination, cancellation
+        //TODO might id mapper extension
         return await _dbContext.Notes.Select(note => new NoteResponse
         {
             Id = note.Id,
@@ -42,15 +44,15 @@ public class NotesRepository : INotesRepository
 
     // TODO: have a controller for categories and mediatypes (add and get all), so that the API user gets them and uses id's to set, search by ID is going to be better
     // TODO: also figure out how to bypass looking up tables before adding new note (like explicit properties for foreign keys)
-    public async Task<NoteResponse> AddAsync(NotePostRequest notePost)
+    public async Task<NoteResponse> AddAsync(NotePostRequest request)
     {
         // TODO: rename to plural (by creating without props it made singular
         var addedNote = await _dbContext.Notes.AddAsync(new()
         {
-            NoteKey = notePost.NoteKey,
-            NoteValue = notePost.NoteValue,
-            Categories = await _dbContext.Categories.Where(c => notePost.Categories.Contains(c.Name)).ToListAsync(),
-            MediaType = await _dbContext.MediaTypes.SingleAsync(m => m.TypeName.Equals(notePost.MediaType)),
+            NoteKey = request.NoteKey,
+            NoteValue = request.NoteValue,
+            Categories = await _dbContext.Categories.Where(c => request.Categories.Contains(c.Name)).ToListAsync(),
+            MediaType = await _dbContext.MediaTypes.SingleAsync(m => m.TypeName.Equals(request.MediaType)),
             LastAccess = DateTime.Now,
         });
 
@@ -73,7 +75,7 @@ public class NotesRepository : INotesRepository
 
     // TODO: make sure it is transactional and can be rolled back
     // Might need to redo later to make it more efficient (storedprocedures?)
-    public async Task<bool> UpdateAsync(int id, NotePutRequest notePut)
+    public async Task<bool> UpdateAsync(int id, NotePutRequest request)
     {
         // TODO something like if categories updated then foreach category updated, add notes(noteids?)
         // for everything else that is updated - go on and update properties on Note
@@ -89,15 +91,15 @@ public class NotesRepository : INotesRepository
         }
 
         // TODO: change dto to specificly state only categories that are added, mediatype change or value change everything else should be same
-        note.NoteValue = notePut.NoteValue;
+        note.NoteValue = request.NoteValue;
 
         // TODO: Change put/post to use IDs 
-        if (note.MediaType.TypeName != notePut.MediaType)
+        if (note.MediaType.TypeName != request.MediaType)
         {
-            note.MediaType = await _dbContext.MediaTypes.SingleAsync(m => m.TypeName.Equals(notePut.MediaType));
+            note.MediaType = await _dbContext.MediaTypes.SingleAsync(m => m.TypeName.Equals(request.MediaType));
         }
 
-        await UpdateCategoriesAsync(note, notePut);
+        await UpdateCategoriesAsync(note, request);
 
         // TODO: add check if no changes made then don't save 
         int updated = await _dbContext.SaveChangesAsync();
@@ -105,11 +107,18 @@ public class NotesRepository : INotesRepository
         return updated > 0;
     }
 
-    private async Task UpdateCategoriesAsync(Note note, NotePutRequest notePut)
+    public async Task<bool> DeleteAsync(int id)
+    {
+        var removed = await _dbContext.Notes.Where(n => n.Id == id)
+                                         .ExecuteDeleteAsync();
+        return removed > 0;
+    }
+
+    private async Task UpdateCategoriesAsync(Note note, NotePutRequest request)
     {
         var currentIds = note.Categories.Select(c => c.Id).ToList();
-        var categoriesToRemove = note.Categories.Where(c => !notePut.Categories.Contains(c.Name)).ToList();
-        var addedCategories = await _dbContext.Categories.Where(c => notePut.Categories.Contains(c.Name)
+        var categoriesToRemove = note.Categories.Where(c => !request.Categories.Contains(c.Name)).ToList();
+        var addedCategories = await _dbContext.Categories.Where(c => request.Categories.Contains(c.Name)
                                                                    && !currentIds.Contains(c.Id))
                                                        .ToListAsync();
 
@@ -122,12 +131,5 @@ public class NotesRepository : INotesRepository
         {
             note.Categories.Add(category);
         }
-    }
-
-    public async Task<bool> DeleteAsync(int id)
-    {
-        var removed = await _dbContext.Notes.Where(n => n.Id == id)
-                                         .ExecuteDeleteAsync();
-        return removed > 0;
     }
 }

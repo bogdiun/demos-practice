@@ -1,4 +1,4 @@
-﻿namespace NotesService.API.DataAccess.Models;
+﻿namespace NotesService.API.DataAccess.Entities;
 
 using System.ComponentModel.DataAnnotations;
 

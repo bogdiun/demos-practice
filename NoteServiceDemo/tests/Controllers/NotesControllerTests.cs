@@ -6,9 +6,10 @@ using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NotesService.API;
+using NotesService.API.Common;
+using NotesService.API.Common.DTO.Request;
+using NotesService.API.Common.DTO.Response;
 using NotesService.API.Controllers;
-using NotesService.API.DTO;
 using NotesService.Tests.Fixtures;
 
 public class NotesControllerTests
@@ -30,12 +31,11 @@ public class NotesControllerTests
 
 
     [Fact]
-    public async void Get_OnSuccess_ReturnsStatusCode200AndNoteList()
+    public async Task Get_OnSuccess_ReturnsStatusCode200AndNoteList()
     {
         // Arrange
         A.CallTo(() => _repository.GetAsync(A<string?>._, A<string?>._))
          .Returns(NoteResponseFixtures.GetTestNoteResponses());
-
 
         // Act
         IActionResult result = await _sut.GetAsync(null, null);
@@ -47,7 +47,7 @@ public class NotesControllerTests
     }
 
     [Fact]
-    public async void Get_OnNoData_ReturnsNoContent204()
+    public async Task Get_OnNoData_ReturnsNoContent204()
     {
         // Arrange
         A.CallTo(() => _repository.GetAsync(A<string?>._, A<string?>._))
@@ -63,11 +63,11 @@ public class NotesControllerTests
     }
 
     [Fact]
-    public async void Get_OnSuccess_InvokesRepositoryOnce()
+    public async Task Get_OnSuccess_InvokesRepositoryOnce()
     {
         // Arrange
         // Act
-        IActionResult result = await _sut.GetAsync(null, null);
+        _ = await _sut.GetAsync(null, null);
 
         // Assert
         A.CallTo(() => _repository.GetAsync(A<string?>._, A<string?>._))
@@ -75,10 +75,10 @@ public class NotesControllerTests
     }
 
     [Fact]
-    public async void GetById_OnNotFound_ReturnsStatusCode404()
+    public async Task GetById_OnNotFound_ReturnsStatusCode404()
     {
         // Arrange
-        int missingId = 10;
+        const int missingId = 10;
 
         A.CallTo(() => _repository.GetByIdAsync(missingId))
          .Returns((NoteResponse)null);
@@ -92,10 +92,10 @@ public class NotesControllerTests
     }
 
     [Fact]
-    public async void GetById_OnSuccess_ReturnsStatusCode200AndReturnsNoteResponse()
+    public async Task GetById_OnSuccess_ReturnsStatusCode200AndReturnsNoteResponse()
     {
         // Arrange
-        int requestedId = 10;
+        const int requestedId = 10;
         A.CallTo(() => _repository.GetByIdAsync(requestedId))
          .Returns(NoteResponseFixtures.GetTestNoteResponse());
 
@@ -110,7 +110,7 @@ public class NotesControllerTests
 
     // TODO: resolve properly test of location setting
     [Fact]
-    public async void Post_OnSuccess_ReturnsStatusCode201AndReturnsNoteResponseAndLocationAddress()
+    public async Task Post_OnSuccess_ReturnsStatusCode201AndReturnsNoteResponseAndLocationAddress()
     {
         // Arrange
         NotePostRequest note = new()
@@ -146,7 +146,7 @@ public class NotesControllerTests
     }
 
     [Fact]
-    public async void Post_OnInvalidRequest_ReturnsStatusCode400()
+    public async Task Post_OnInvalidRequest_ReturnsStatusCode400()
     {
         // Arrange
         NotePostRequest note = new();
