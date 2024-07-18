@@ -18,8 +18,7 @@ public static class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // TODO: DBContext config should be job of DataAccess layer?
-        // TODO later c.UseSQLServer
-        builder.Services.AddDbContext<DataContext>(c =>
+        builder.Services.AddDbContextPool<DataContext>(c =>
         {
             //c.UseInMemoryDatabase(builder.Configuration.GetConnectionString("InMemDB"));
             c.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));

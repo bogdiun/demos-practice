@@ -13,7 +13,7 @@ public class Note
 
     required public DateTime LastAccess { get; set; }
 
-    required public string MediaType { get; set; }
+    required public MediaType MediaType { get; set; }
 
-    public string? Categories { get; set; }
+    public ICollection<Category> Categories { get; set; }
 }
