@@ -1,6 +1,7 @@
-﻿using NotesService.API.DTO;
+﻿namespace NotesService.API.Common;
 
-namespace NotesService.API;
+using NotesService.API.Common.DTO.Request;
+using NotesService.API.Common.DTO.Response;
 
 // API described Interface, could return the Result in the way Controller wants it?
 // Or if we keep DataAccess in here and don't care about changing it then we might remove it and do directly
@@ -11,9 +12,9 @@ public interface INotesRepository
 
     Task<NoteResponse> GetByIdAsync(int id);
 
-    Task<NoteResponse> AddAsync(NotePostRequest notePost);
+    Task<NoteResponse> AddAsync(NotePostRequest request);
 
-    Task<bool> UpdateAsync(int id, NotePutRequest notePut);
+    Task<bool> UpdateAsync(int id, NotePutRequest request);
 
     Task<bool> DeleteAsync(int id);
 }

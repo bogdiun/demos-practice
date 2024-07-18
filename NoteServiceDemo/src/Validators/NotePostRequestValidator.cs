@@ -1,7 +1,7 @@
 ﻿namespace NotesService.API.Validators;
 
 using FluentValidation;
-using NotesService.API.DTO;
+using NotesService.API.Common.DTO.Request;
 
 public class NotePostRequestValidator : AbstractValidator<NotePostRequest>
 {

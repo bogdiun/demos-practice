@@ -1,11 +1,11 @@
 ﻿namespace NotesService.API.Controllers;
 
-using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using NotesService.API;
-using NotesService.API.DTO;
+using NotesService.API.Common;
+using NotesService.API.Common.DTO.Request;
+using NotesService.API.Common.DTO.Response;
 
 [ApiController]
 [Route("api/v{v:apiVersion}/[controller]")]
@@ -14,15 +14,16 @@ using NotesService.API.DTO;
 public class NotesController : ControllerBase
 {
     private readonly ILogger<NotesController> _logger;
-    private readonly INotesRepository _notesRepository;
+    private readonly INotesRepository _repository;
     private readonly IValidator<NotePostRequest> _postRequestValidator;
 
-    public NotesController(ILogger<NotesController> logger,
-                           INotesRepository notesRepository,
-                           IValidator<NotePostRequest> postRequestValidator)
+    public NotesController(
+            ILogger<NotesController> logger,
+            INotesRepository notesRepository,
+            IValidator<NotePostRequest> postRequestValidator)
     {
         _logger = logger;
-        _notesRepository = notesRepository;
+        _repository = notesRepository;
         _postRequestValidator = postRequestValidator;
     }
 
@@ -37,7 +38,7 @@ public class NotesController : ControllerBase
     {
         // TODO manage users
 
-        IList<NoteResponse> results = await _notesRepository.GetAsync(mediaType, category);
+        IList<NoteResponse> results = await _repository.GetAsync(mediaType, category);
 
         if (results?.Any() != true)
         {
@@ -56,7 +57,7 @@ public class NotesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync(int id)
     {
-        NoteResponse result = await _notesRepository.GetByIdAsync(id);
+        NoteResponse result = await _repository.GetByIdAsync(id);
 
         if (result == null)
         {
@@ -75,6 +76,7 @@ public class NotesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostAsync([FromBody] NotePostRequest postRequest)
     {
+        // TODO manage exceptions properly, in case object is created but exception is thrown ie.
         var validationResult = _postRequestValidator.Validate(postRequest);
 
         if (!validationResult.IsValid)
@@ -82,7 +84,7 @@ public class NotesController : ControllerBase
             return BadRequest(validationResult);
         }
 
-        NoteResponse postedNote = await _notesRepository.AddAsync(postRequest);
+        NoteResponse postedNote = await _repository.AddAsync(postRequest);
 
         if (postedNote == null)
         {
@@ -102,7 +104,7 @@ public class NotesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAsync(int id, [FromBody] NotePutRequest putRequest)
     {
-        bool isUpdated = await _notesRepository.UpdateAsync(id, putRequest);
+        bool isUpdated = await _repository.UpdateAsync(id, putRequest);
 
         if (isUpdated)
         {
@@ -121,7 +123,7 @@ public class NotesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(int id)
     {
-        bool isUpadated = await _notesRepository.DeleteAsync(id);
+        bool isUpadated = await _repository.DeleteAsync(id);
 
         if (isUpadated)
         {

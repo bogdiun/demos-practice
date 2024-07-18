@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NotesService.API.DataAccess;
 
@@ -11,9 +12,11 @@ using NotesService.API.DataAccess;
 namespace NotesService.API.DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240717175354_AddTables")]
+    partial class AddTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,7 @@ namespace NotesService.API.DataAccess.Migrations
 
                     b.HasIndex("NotesId");
 
-                    b.ToTable("CategoryNote", (string)null);
+                    b.ToTable("CategoryNote");
                 });
 
             modelBuilder.Entity("NotesService.API.DataAccess.Models.Category", b =>
@@ -52,7 +55,7 @@ namespace NotesService.API.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("NotesService.API.DataAccess.Models.MediaType", b =>
@@ -70,7 +73,7 @@ namespace NotesService.API.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MediaTypes", (string)null);
+                    b.ToTable("MediaType");
                 });
 
             modelBuilder.Entity("NotesService.API.DataAccess.Models.Note", b =>
@@ -99,7 +102,7 @@ namespace NotesService.API.DataAccess.Migrations
 
                     b.HasIndex("MediaTypeId");
 
-                    b.ToTable("Notes", (string)null);
+                    b.ToTable("Notes");
                 });
 
             modelBuilder.Entity("CategoryNote", b =>
