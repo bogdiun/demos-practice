@@ -19,7 +19,7 @@ public class NotesRepository : INotesRepository
     public async Task<IList<NoteResponse>> GetAsync(string? mediaType, string? category)
     {
         // TODO implement pagination, cancellation
-        //TODO might id mapper extension
+        // TODO might id mapper extensions
         return await _dbContext.Notes.Select(note => new NoteResponse
         {
             Id = note.Id,
@@ -42,7 +42,6 @@ public class NotesRepository : INotesRepository
         }).SingleOrDefaultAsync(x => x.Id == id);
     }
 
-    // TODO: have a controller for categories and mediatypes (add and get all), so that the API user gets them and uses id's to set, search by ID is going to be better
     // TODO: also figure out how to bypass looking up tables before adding new note (like explicit properties for foreign keys)
     public async Task<NoteResponse> AddAsync(NotePostRequest request)
     {
@@ -75,12 +74,9 @@ public class NotesRepository : INotesRepository
 
     // TODO: make sure it is transactional and can be rolled back
     // Might need to redo later to make it more efficient (storedprocedures?)
+    // TODO: only change actually where needed categories/mediatype/value - work out how it is best to do
     public async Task<bool> UpdateAsync(int id, NotePutRequest request)
     {
-        // TODO something like if categories updated then foreach category updated, add notes(noteids?)
-        // for everything else that is updated - go on and update properties on Note
-
-        // In SQL case I would need to insert mediatypeId directly with note and there would be an n amount of insertions to CategoryNotes table)
         var note = await _dbContext.Notes.Include(n => n.MediaType)
                                          .Include(n => n.Categories)
                                          .FirstOrDefaultAsync(n => n.Id == id);
@@ -90,10 +86,8 @@ public class NotesRepository : INotesRepository
             return false;
         }
 
-        // TODO: change dto to specificly state only categories that are added, mediatype change or value change everything else should be same
         note.NoteValue = request.NoteValue;
 
-        // TODO: Change put/post to use IDs 
         if (note.MediaType.Id != request.MediaTypeId)
         {
             note.MediaType = await _dbContext.MediaTypes.FindAsync(request.MediaTypeId);

@@ -10,7 +10,7 @@ public class NotePostRequestValidator : AbstractValidator<NotePostRequest>
 
         RuleFor(x => x.NoteKey)
             .NotEmpty()
-            .Length(1 - 50);
+            .Length(1, 50);
 
         RuleFor(x => x.MediaTypeId)
             .NotEmpty();

@@ -10,6 +10,6 @@ public class CategoryRequestValidator : AbstractValidator<CategoryRequest>
 
         RuleFor(x => x.Name)
             .NotEmpty()
-            .Length(1 - 50);
+            .Length(1, 50);
     }
 }

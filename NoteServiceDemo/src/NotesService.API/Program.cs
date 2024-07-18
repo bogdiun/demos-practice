@@ -5,7 +5,6 @@ using Asp.Versioning;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using NotesService.API.Abstractions;
 using NotesService.API.Abstractions.DTO.Request;
 using NotesService.API.DataAccess;
 using NotesService.API.Swagger;
@@ -18,15 +17,7 @@ public static class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // TODO: DBContext config should be job of DataAccess layer?
-        builder.Services.AddDbContextPool<DataContext>(c =>
-        {
-            //c.UseInMemoryDatabase(builder.Configuration.GetConnectionString("InMemDB"));
-            c.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-        });
-        builder.Services.AddScoped<INotesRepository, NotesRepository>();
-        builder.Services.AddScoped<IMediaTypeRepository, MediaTypeRepository>();
-        builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+        builder.Services.AddDataAccessLayer(builder.Configuration);
 
         builder.Services.AddControllers();
         builder.Services.AddScoped<IValidator<NotePostRequest>, NotePostRequestValidator>();
