@@ -2,7 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-public class Note
+internal sealed class Note
 {
     [Key]
     public int Id { get; set; }

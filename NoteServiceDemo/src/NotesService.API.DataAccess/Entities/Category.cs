@@ -2,7 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-public class Category
+internal sealed class Category
 {
     [Key]
     public int Id { get; set; }

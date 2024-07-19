@@ -1,5 +1,6 @@
 ﻿namespace NotesService.API.DataAccess;
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,5 +20,14 @@ public static class DependencyInjection
         services.AddScoped<ICategoryRepository, CategoryRepository>();
 
         return services;
+    }
+
+    public static async Task UseDatabaseMigrationAsync(this IApplicationBuilder app)
+    {
+        using var scope = app.ApplicationServices.CreateScope();
+
+        var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+        await dbContext.Database.MigrateAsync();
     }
 }

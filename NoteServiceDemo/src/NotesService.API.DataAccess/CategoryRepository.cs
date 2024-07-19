@@ -6,7 +6,7 @@ using NotesService.API.Abstractions;
 using NotesService.API.Abstractions.DTO.Request;
 using NotesService.API.Abstractions.DTO.Response;
 
-public class CategoryRepository : ICategoryRepository
+internal sealed class CategoryRepository : ICategoryRepository
 {
     private readonly DataContext _dbContext;
 

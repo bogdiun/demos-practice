@@ -7,7 +7,7 @@ using NotesService.API.Abstractions.DTO.Request;
 using NotesService.API.Abstractions.DTO.Response;
 using NotesService.API.DataAccess.Entities;
 
-public class NotesRepository : INotesRepository
+internal sealed class NotesRepository : INotesRepository
 {
     private readonly DataContext _dbContext;
 
@@ -19,7 +19,7 @@ public class NotesRepository : INotesRepository
     public async Task<IList<NoteResponse>> GetAsync(string? mediaType, string? category)
     {
         // TODO implement pagination, cancellation
-        // TODO might id mapper extensions
+        // TODO mappers probably not necessary
         return await _dbContext.Notes.Select(note => new NoteResponse
         {
             Id = note.Id,
