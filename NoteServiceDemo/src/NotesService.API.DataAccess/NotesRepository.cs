@@ -16,8 +16,9 @@ internal sealed class NotesRepository : INotesRepository
         _dbContext = dbContext;
     }
 
-    public async Task<IList<NoteResponse>> GetAsync(string? mediaType, string? category)
+    public async Task<IList<NoteResponse>> GetAsync(int? mediaTypeId, int? categoryId)
     {
+        // TODO: filtering
         // TODO implement pagination, cancellation
         // TODO mappers probably not necessary
         return await _dbContext.Notes.Select(note => new NoteResponse

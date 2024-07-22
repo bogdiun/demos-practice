@@ -22,11 +22,11 @@ public static class NoteResponseFixtures
             NoteKey = "zumbado",
             NoteValue = "loco-ES",
             MediaType = "text",
-            Categories = [ "slang","spanish","word"],
-        }
+            Categories = [ "slang", "spanish", "word"],
+        },
     ];
 
-    internal static async Task<NoteResponse> GetTestNoteResponse() => new()
+    internal static NoteResponse GetTestNoteResponse() => new()
     {
         Id = 10,
         NoteKey = "key",

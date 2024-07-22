@@ -34,11 +34,11 @@ public class NotesController : ControllerBase
     /// <exception cref="NotImplementedException"></exception>
     [HttpGet]
     // TODO: Add [ProducesResponseType(200, typeof(ExampleTypeObject))]
-    public async Task<IActionResult> GetAsync([FromQuery] string? mediaType, [FromQuery] string? category)
+    public async Task<IActionResult> GetAsync([FromQuery] int? mediaTypeId, [FromQuery] int? categoryId)
     {
         // TODO manage users
 
-        IList<NoteResponse> results = await _repository.GetAsync(mediaType, category);
+        IList<NoteResponse> results = await _repository.GetAsync(mediaTypeId, categoryId);
 
         if (results?.Any() != true)
         {
