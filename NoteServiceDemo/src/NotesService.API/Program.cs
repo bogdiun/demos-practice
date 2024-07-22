@@ -69,6 +69,7 @@ public static class Program
 
         app.MapControllers();
 
+        await app.UseDatabaseMigrationAsync();
         await app.RunAsync();
     }
 }

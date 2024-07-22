@@ -7,10 +7,9 @@ public class NotePostRequestValidator : AbstractValidator<NotePostRequest>
 {
     public NotePostRequestValidator()
     {
-
         RuleFor(x => x.NoteKey)
-            .NotEmpty()
-            .Length(1, 50);
+            .NotEmpty().WithMessage("Must not be empty")
+            .Length(1, 50).WithMessage("Must be max 50 characters");
 
         RuleFor(x => x.MediaTypeId)
             .NotEmpty();

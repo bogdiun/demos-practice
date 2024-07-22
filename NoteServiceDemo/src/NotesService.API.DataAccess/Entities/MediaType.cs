@@ -2,7 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-public class MediaType
+internal sealed class MediaType
 {
     [Key]
     public int Id { get; set; }

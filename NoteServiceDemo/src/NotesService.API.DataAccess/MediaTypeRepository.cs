@@ -6,7 +6,7 @@ using NotesService.API.Abstractions;
 using NotesService.API.Abstractions.DTO.Request;
 using NotesService.API.Abstractions.DTO.Response;
 
-public class MediaTypeRepository : IMediaTypeRepository
+internal sealed class MediaTypeRepository : IMediaTypeRepository
 {
     private readonly DataContext _dbContext;
 

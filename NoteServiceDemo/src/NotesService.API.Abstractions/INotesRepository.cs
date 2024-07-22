@@ -8,7 +8,7 @@ using NotesService.API.Abstractions.DTO.Response;
 // TODO: separate into separate project NoteService.DataAccess, and then this one would need to go somewhere to NoteService.Abstractions/Commons?
 public interface INotesRepository
 {
-    Task<IList<NoteResponse>> GetAsync(string? mediaType, string? category);
+    Task<IList<NoteResponse>> GetAsync(int? mediaTypeId, int? categoryId);
 
     Task<NoteResponse> GetByIdAsync(int id);
 

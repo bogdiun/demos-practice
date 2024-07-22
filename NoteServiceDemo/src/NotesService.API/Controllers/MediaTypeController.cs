@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using NotesService.API.Abstractions;
 using NotesService.API.Abstractions.DTO.Request;
 using NotesService.API.Abstractions.DTO.Response;
-    
+
 [ApiController]
 [Route("api/v{v:apiVersion}/[controller]")]
 [ApiVersion("1.0")]

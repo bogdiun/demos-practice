@@ -7,9 +7,8 @@ public class MediaTypeRequestValidator : AbstractValidator<MediaTypeRequest>
 {
     public MediaTypeRequestValidator()
     {
-
         RuleFor(x => x.Name)
             .NotEmpty()
-            .Length(1, 50);
+            .Length(1, 50).WithMessage("Must be max 50 characters");
     }
 }
