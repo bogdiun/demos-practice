@@ -1,20 +1,13 @@
 namespace NotesService.API;
 
 using System.Reflection;
-using System.Text;
 using Asp.Versioning;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using NotesService.API.Abstractions.DTO.Request;
-using NotesService.API.Authentication;
+using NotesService.API.Auth;
 using NotesService.API.DataAccess;
 using NotesService.API.Swagger;
-using NotesService.API.Validators;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 public static class Program
@@ -23,66 +16,17 @@ public static class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddDataAccessLayer(builder.Configuration);
+        // TODO: Authorization rules/policies not sure where this is supposed to go then
+        builder.Services.AddAuthenticationServices(builder.Configuration);
+        builder.Services.AddAuthorizationBuilder()
+                        .AddPolicy("AdminAccess", p => p.RequireClaim("Admin"));
 
-        builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.Key));
-
-        builder.Services.AddAuthentication(o =>
-                        {
-                            o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                            o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                            o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                        })
-                        .AddJwtBearer(o =>
-                        {
-                            o.SaveToken = true;
-                            o.TokenValidationParameters = new TokenValidationParameters
-                            {
-                                ValidateIssuerSigningKey = true,
-                                // TODO: figure out how to take it from configuration easily
-                                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection(JwtSettings.Key + ":Secret").Value)),
-                                ValidateIssuer = false,
-                                ValidateAudience = false,
-                                RequireExpirationTime = false,
-                                ValidateLifetime = true,
-                            };
-                        });
-        // TODO: Add OAuth as an option?
-
-        builder.Services.AddControllers();
-        builder.Services.AddScoped<IValidator<NotePostRequest>, NotePostRequestValidator>();
-        builder.Services.AddScoped<IValidator<MediaTypeRequest>, MediaTypeRequestValidator>();
-        builder.Services.AddScoped<IValidator<CategoryRequest>, CategoryRequestValidator>();
-        //builder.Services.AddFluentValidationAutoValidation();
-
-        builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+        // Swagger / OpenAPI things (inc openAPI security definitions/requirements)
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(c =>
-        {
-            string xmlDocFilename = Path.Combine(AppContext.BaseDirectory, Assembly.GetExecutingAssembly().GetName().Name + ".xml");
-            c.IncludeXmlComments(xmlDocFilename);
-            c.OperationFilter<SwaggerDefaultValues>();
+        builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+        builder.Services.AddSwaggerGen();
 
-            OpenApiSecurityScheme securityScheme = new()
-            {
-                Scheme = "Bearer",
-                Description = "JWT Authorization header",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer",
-                },
-            };
-
-            c.AddSecurityDefinition(securityScheme.Scheme, securityScheme);
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                { securityScheme, Array.Empty<string>() },
-            });
-        });
+        // API Versioning
         builder.Services.AddApiVersioning(c =>
                         {
                             c.DefaultApiVersion = new ApiVersion(1, 0);
@@ -95,9 +39,11 @@ public static class Program
                             c.SubstituteApiVersionInUrl = true;
                         });
 
-        var app = builder.Build();
+        builder.Services.AddControllers();
+        builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        builder.Services.AddDataPersistance(builder.Configuration);
 
-        // Configure the HTTP request pipeline.
+        var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
         {
@@ -111,15 +57,17 @@ public static class Program
                     c.DisplayRequestDuration();
                 }
             });
+
+
+            await app.RunAuthDatabaseMigrationAsync();
+            await app.RunDALDatabaseMigrationAsync();
         }
 
         app.UseHttpsRedirection();
         app.UseAuthentication();
-        //app.UseAuthorization();
-
+        app.UseAuthorization();
         app.MapControllers();
 
-        await app.UseDatabaseMigrationAsync();
         await app.RunAsync();
     }
 }

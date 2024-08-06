@@ -2,6 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
+// TODO: add subnotes concept
 internal sealed class Note
 {
     [Key]
@@ -17,4 +18,6 @@ internal sealed class Note
     required public MediaType MediaType { get; set; }
 
     public ICollection<Category> Categories { get; set; }
+
+    required public string UserId { get; set; }
 }

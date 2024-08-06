@@ -1,4 +1,4 @@
-﻿namespace NotesService.API.DataAccess;
+﻿namespace NotesService.API.DataAccess.Repositories;
 
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
