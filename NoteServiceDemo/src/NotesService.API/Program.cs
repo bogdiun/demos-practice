@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NotesService.API.Auth;
 using NotesService.API.DataAccess;
+using NotesService.API.Middlewares;
 using NotesService.API.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -62,6 +63,10 @@ public static class Program
             await app.RunAuthDatabaseMigrationAsync();
             await app.RunDALDatabaseMigrationAsync();
         }
+
+        // TODO: add RateLimiting
+
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
 
         app.UseHttpsRedirection();
         app.UseAuthentication();
