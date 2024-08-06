@@ -2,6 +2,8 @@
 
 using Asp.Versioning;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NotesService.API.Abstractions;
 using NotesService.API.Abstractions.DTO.Request;
@@ -10,6 +12,7 @@ using NotesService.API.Abstractions.DTO.Response;
 [ApiController]
 [Route("api/v{v:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Produces("application/json")]
 public class NotesController : ControllerBase
 {
@@ -28,7 +31,7 @@ public class NotesController : ControllerBase
     }
 
     /// <summary>
-    /// Gets all notes for the user
+    /// Gets all notes for the current logged in user
     /// </summary>
     /// <returns>id's and descriptions of all notes</returns>
     /// <exception cref="NotImplementedException"></exception>
@@ -36,8 +39,6 @@ public class NotesController : ControllerBase
     // TODO: Add [ProducesResponseType(200, typeof(ExampleTypeObject))]
     public async Task<IActionResult> GetAsync([FromQuery] int? mediaTypeId, [FromQuery] int? categoryId)
     {
-        // TODO manage users
-
         IList<NoteResponse> results = await _repository.GetAsync(mediaTypeId, categoryId);
 
         if (results?.Any() != true)
@@ -54,7 +55,7 @@ public class NotesController : ControllerBase
     /// <param name="id"></param>
     /// <returns>Note details</returns>
     /// <exception cref="NotImplementedException"></exception>
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = "GetNote")]
     public async Task<IActionResult> GetAsync(int id)
     {
         NoteResponse result = await _repository.GetByIdAsync(id);
@@ -84,15 +85,14 @@ public class NotesController : ControllerBase
             return BadRequest(validationResult);
         }
 
-        NoteResponse postedNote = await _repository.AddAsync(postRequest);
+        NoteResponse created = await _repository.AddAsync(postRequest);
 
-        if (postedNote == null)
+        if (created == null)
         {
             return BadRequest();
         }
 
-        // TODO: later adjust it to return full uri, without using HttpContext
-        return Created($"notes/{postedNote.Id}", postedNote);
+        return CreatedAtRoute("GetNote", new { id = created.Id }, created);
     }
 
     /// <summary>

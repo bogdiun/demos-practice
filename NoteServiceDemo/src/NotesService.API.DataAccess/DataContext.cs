@@ -13,7 +13,7 @@ internal sealed class DataContext(DbContextOptions<DataContext> options) : DbCon
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
+        modelBuilder.HasDefaultSchema("Notes");
 
         // TODO seed the DB with Data
     }

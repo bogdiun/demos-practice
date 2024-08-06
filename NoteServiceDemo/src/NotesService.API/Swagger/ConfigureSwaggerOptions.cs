@@ -1,20 +1,49 @@
 ﻿namespace NotesService.API.Swagger;
 
+using System.Reflection;
+using System.Text;
 using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Text;
 
 public class ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) : IConfigureOptions<SwaggerGenOptions>
 {
     public void Configure(SwaggerGenOptions options)
     {
+        options.OperationFilter<SwaggerDefaultValues>();
+
         foreach (var description in provider.ApiVersionDescriptions)
         {
             options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
         }
+
+        string xmlDocFilename = Path.Combine(AppContext.BaseDirectory, Assembly.GetExecutingAssembly().GetName().Name + ".xml");
+        options.IncludeXmlComments(xmlDocFilename);
+
+        OpenApiSecurityScheme securityScheme = CreateSecurityScheme();
+
+        options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme);
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            { securityScheme, Array.Empty<string>() },
+        });
     }
+
+    private static OpenApiSecurityScheme CreateSecurityScheme() => new()
+    {
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
+        Description = "JWT Authorization header",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = JwtBearerDefaults.AuthenticationScheme,
+        },
+    };
 
     private static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
     {

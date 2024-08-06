@@ -1,6 +1,5 @@
 ﻿namespace NotesService.API.Abstractions.DTO.Request;
 
-// TODO: data validation/constraints
 public record NotePutRequest
 {
     public string NoteValue { get; init; }

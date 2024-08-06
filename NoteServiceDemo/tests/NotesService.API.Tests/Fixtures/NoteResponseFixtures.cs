@@ -1,7 +1,5 @@
 ﻿namespace NotesService.Tests.Fixtures;
 
-using System;
-using System.Threading.Tasks;
 using NotesService.API.Abstractions.DTO.Response;
 
 public static class NoteResponseFixtures

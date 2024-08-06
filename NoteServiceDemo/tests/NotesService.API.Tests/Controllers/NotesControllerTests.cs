@@ -3,7 +3,6 @@ namespace NotesService.Tests.Controllers;
 using FakeItEasy;
 using FluentValidation;
 using FluentValidation.Results;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NotesService.API.Abstractions;
@@ -34,7 +33,7 @@ public class NotesControllerTests
     public async Task Get_OnSuccess_ReturnsStatusCode200AndNoteList()
     {
         // Arrange
-        A.CallTo(() => _repository.GetAsync(A<string?>._, A<string?>._))
+        A.CallTo(() => _repository.GetAsync(A<int?>._, A<int?>._))
          .Returns(NoteResponseFixtures.GetTestNoteResponses());
 
         // Act
@@ -50,7 +49,7 @@ public class NotesControllerTests
     public async Task Get_OnNoData_ReturnsNoContent204()
     {
         // Arrange
-        A.CallTo(() => _repository.GetAsync(A<string?>._, A<string?>._))
+        A.CallTo(() => _repository.GetAsync(A<int?>._, A<int?>._))
          .Returns([]);
 
 
@@ -70,7 +69,7 @@ public class NotesControllerTests
         _ = await _sut.GetAsync(null, null);
 
         // Assert
-        A.CallTo(() => _repository.GetAsync(A<string?>._, A<string?>._))
+        A.CallTo(() => _repository.GetAsync(A<int?>._, A<int?>._))
          .MustHaveHappenedOnceExactly();
     }
 
@@ -132,7 +131,7 @@ public class NotesControllerTests
              Id = 1,
              NoteKey = "key",
              NoteValue = "value",
-             Categories = [ "m", "n" ],
+             Categories = ["m", "n"],
              MediaType = "text",
          });
 
