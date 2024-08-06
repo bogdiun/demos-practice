@@ -2,6 +2,7 @@
 
 using Asp.Versioning;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NotesService.API.Abstractions;
@@ -11,7 +12,7 @@ using NotesService.API.Abstractions.DTO.Response;
 [ApiController]
 [Route("api/v{v:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
-[Authorize]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Produces("application/json")]
 public class CategoryController : ControllerBase
 {
