@@ -3,6 +3,7 @@
 using System.ComponentModel.DataAnnotations;
 
 // TODO: add subnotes concept
+// TODO: in case there are more entities that are associated with user we could also have a separate catalog of all user items
 internal sealed class Note
 {
     [Key]

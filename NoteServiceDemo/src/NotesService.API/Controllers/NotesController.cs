@@ -30,6 +30,9 @@ public class NotesController : ControllerBase
         _postRequestValidator = postRequestValidator;
     }
 
+    // TODO: where does the user Id sit?
+    private string? UserId => User?.Claims.Single(c => c.Type == "id").Value;
+
     /// <summary>
     /// Gets all notes for the current logged in user
     /// </summary>
@@ -39,7 +42,8 @@ public class NotesController : ControllerBase
     // TODO: Add [ProducesResponseType(200, typeof(ExampleTypeObject))]
     public async Task<IActionResult> GetAsync([FromQuery] int? mediaTypeId, [FromQuery] int? categoryId)
     {
-        IList<NoteResponse> results = await _repository.GetAsync(mediaTypeId, categoryId);
+        //TODO: do I check any claims here?
+        IList<NoteResponse> results = await _repository.GetAsync(UserId, mediaTypeId, categoryId);
 
         if (results?.Any() != true)
         {
@@ -58,7 +62,7 @@ public class NotesController : ControllerBase
     [HttpGet("{id}", Name = "GetNote")]
     public async Task<IActionResult> GetAsync(int id)
     {
-        NoteResponse result = await _repository.GetByIdAsync(id);
+        NoteResponse result = await _repository.GetByIdAsync(UserId, id);
 
         if (result == null)
         {
@@ -85,7 +89,7 @@ public class NotesController : ControllerBase
             return BadRequest(validationResult);
         }
 
-        NoteResponse created = await _repository.AddAsync(postRequest);
+        NoteResponse created = await _repository.AddAsync(UserId, postRequest);
 
         if (created == null)
         {
@@ -104,7 +108,7 @@ public class NotesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAsync(int id, [FromBody] NotePutRequest putRequest)
     {
-        bool isUpdated = await _repository.UpdateAsync(id, putRequest);
+        bool isUpdated = await _repository.UpdateAsync(UserId, id, putRequest);
 
         if (isUpdated)
         {
@@ -123,7 +127,7 @@ public class NotesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(int id)
     {
-        bool isUpadated = await _repository.DeleteAsync(id);
+        bool isUpadated = await _repository.DeleteAsync(UserId, id);
 
         if (isUpadated)
         {

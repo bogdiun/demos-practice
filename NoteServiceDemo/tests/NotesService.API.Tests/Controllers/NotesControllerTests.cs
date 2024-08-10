@@ -33,7 +33,7 @@ public class NotesControllerTests
     public async Task Get_OnSuccess_ReturnsStatusCode200AndNoteList()
     {
         // Arrange
-        A.CallTo(() => _repository.GetAsync(A<int?>._, A<int?>._))
+        A.CallTo(() => _repository.GetAsync(A<string>._, A<int?>._, A<int?>._))
          .Returns(NoteResponseFixtures.GetTestNoteResponses());
 
         // Act
@@ -49,7 +49,7 @@ public class NotesControllerTests
     public async Task Get_OnNoData_ReturnsNoContent204()
     {
         // Arrange
-        A.CallTo(() => _repository.GetAsync(A<int?>._, A<int?>._))
+        A.CallTo(() => _repository.GetAsync(A<string>._, A<int?>._, A<int?>._))
          .Returns([]);
 
 
@@ -69,7 +69,7 @@ public class NotesControllerTests
         _ = await _sut.GetAsync(null, null);
 
         // Assert
-        A.CallTo(() => _repository.GetAsync(A<int?>._, A<int?>._))
+        A.CallTo(() => _repository.GetAsync(A<string>._, A<int?>._, A<int?>._))
          .MustHaveHappenedOnceExactly();
     }
 
@@ -79,7 +79,7 @@ public class NotesControllerTests
         // Arrange
         const int missingId = 10;
 
-        A.CallTo(() => _repository.GetByIdAsync(missingId))
+        A.CallTo(() => _repository.GetByIdAsync(A<string>._, missingId))
          .Returns((NoteResponse)null);
 
         // Act
@@ -95,7 +95,7 @@ public class NotesControllerTests
     {
         // Arrange
         const int requestedId = 10;
-        A.CallTo(() => _repository.GetByIdAsync(requestedId))
+        A.CallTo(() => _repository.GetByIdAsync(A<string>._, requestedId))
          .Returns(NoteResponseFixtures.GetTestNoteResponse());
 
         // Act
@@ -125,7 +125,7 @@ public class NotesControllerTests
         A.CallTo(() => _postValidator.Validate(note)).Returns(validationFake);
         A.CallTo(() => validationFake.IsValid).Returns(true);
 
-        A.CallTo(() => _repository.AddAsync(note))
+        A.CallTo(() => _repository.AddAsync(A<string>._, note))
          .Returns(new NoteResponse
          {
              Id = 1,

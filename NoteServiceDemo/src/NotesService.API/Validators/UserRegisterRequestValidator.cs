@@ -8,6 +8,10 @@ public class UserRegisterRequestValidator : AbstractValidator<UserRegistrationRe
     public UserRegisterRequestValidator()
     {
         RuleFor(x => x.Email)
+            .NotEmpty()
             .EmailAddress().WithMessage("Must be an email");
+
+        RuleFor(x => x.Password)
+            .NotEmpty();
     }
 }
