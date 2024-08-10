@@ -1,0 +1,16 @@
+# .NET build directories
+bin/
+obj/
+
+# Visual Studio temporary files
+.vs/
+*.vscode/
+
+# Git files
+.git/
+.gitignore
+
+# Local development files
+Dockerfile
+*.md
+*.sln
