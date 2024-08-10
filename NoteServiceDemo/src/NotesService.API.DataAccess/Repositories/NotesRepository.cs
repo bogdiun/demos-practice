@@ -1,7 +1,6 @@
 ﻿namespace NotesService.API.DataAccess.Repositories;
 
 using System.Linq;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using NotesService.API.Abstractions;
 using NotesService.API.Abstractions.DTO.Request;
@@ -11,23 +10,16 @@ using NotesService.API.DataAccess.Entities;
 internal sealed class NotesRepository : INotesRepository
 {
     private readonly DataContext _dbContext;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public NotesRepository(
-            DataContext dbContext,
-            IHttpContextAccessor httpContextAccessor)
+    public NotesRepository(DataContext dbContext)
     {
         _dbContext = dbContext;
-        _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<IList<NoteResponse>> GetAsync(int? mediaTypeId, int? categoryId)
+    // some Query object?
+    public async Task<IList<NoteResponse>> GetAsync(string? userId, int? mediaTypeId, int? categoryId)
     {
-        // TODO implement pagination, cancellation
-
-        string userId = GetUserId();
-
-        // TODO: check if this is necessary
+        // TODO implement pagination, cancellation, sorting
         if (string.IsNullOrEmpty(userId))
         {
             return null;
@@ -57,10 +49,8 @@ internal sealed class NotesRepository : INotesRepository
         }).ToListAsync();
     }
 
-    public async Task<NoteResponse?> GetByIdAsync(int id)
+    public async Task<NoteResponse?> GetByIdAsync(string userId, int id)
     {
-        string userId = GetUserId();
-
         Note? note = await _dbContext.Notes.Include(n => n.MediaType)
                                            .Include(n => n.Categories)
                                            .SingleOrDefaultAsync(n => n.UserId == userId && n.Id == id);
@@ -81,10 +71,9 @@ internal sealed class NotesRepository : INotesRepository
     }
 
     // TODO: also figure out how to bypass looking up tables before adding new note (like explicit properties for foreign keys)
-    public async Task<NoteResponse> AddAsync(NotePostRequest request)
+    // TODO: Use Note Domain object instead of controller DTO? in That case Entity becomes the domain object that should not be modeled for the EF
+    public async Task<NoteResponse> AddAsync(string userId, NotePostRequest request)
     {
-        string userId = GetUserId();
-
         if (string.IsNullOrEmpty(userId))
         {
             return null;
@@ -119,10 +108,8 @@ internal sealed class NotesRepository : INotesRepository
 
     // TODO: make sure it is transactional and can be rolled back
     // Might need to redo later to make it more efficient (storedprocedures?)
-    public async Task<bool> UpdateAsync(int id, NotePutRequest request)
+    public async Task<bool> UpdateAsync(string userId, int id, NotePutRequest request)
     {
-        string userId = GetUserId();
-
         var note = await _dbContext.Notes.Include(n => n.MediaType)
                                          .Include(n => n.Categories)
                                          .FirstOrDefaultAsync(n => n.UserId == userId && n.Id == id);
@@ -148,18 +135,13 @@ internal sealed class NotesRepository : INotesRepository
         return updated > 0;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(string userId, int id)
     {
-        string userId = GetUserId();
-
         // TODO: split usercheck and the deleting id check, do asnotracking precheck
-
         var removed = await _dbContext.Notes.Where(n => n.Id == id && n.UserId == userId)
                                          .ExecuteDeleteAsync();
         return removed > 0;
     }
-
-    private string? GetUserId() => _httpContextAccessor.HttpContext.User?.Claims.Single(c => c.Type == "id").Value;
 
     private async Task UpdateCategoriesAsync(Note note, NotePutRequest request)
     {

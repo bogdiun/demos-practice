@@ -64,9 +64,14 @@ public static class Program
             await app.RunDALDatabaseMigrationAsync();
         }
 
-        // TODO: add RateLimiting
-
         app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+        // TODO: add more middleware:
+        //app.UseRateLimiter();
+        //app.UseHttpLogging();
+        //app.UseCors();
+        //app.UseOutputCache();
+        //app.UseResponseCaching();
 
         app.UseHttpsRedirection();
         app.UseAuthentication();
@@ -76,5 +81,3 @@ public static class Program
         await app.RunAsync();
     }
 }
-
-// TODO: hosting https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/?view=aspnetcore-2.1&tabs=aspnetcore2x

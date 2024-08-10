@@ -28,6 +28,7 @@ internal class AuthenticationService : IAuthenticationService
             };
         }
 
+        // TODO: look into difference between this and SignInManager password check
         var validPassword = await _userManager.CheckPasswordAsync(existingUser, password);
 
         if (!validPassword)
@@ -66,13 +67,23 @@ internal class AuthenticationService : IAuthenticationService
             Email = email,
         };
 
-        var createdUser = await _userManager.CreateAsync(newUser, password);
+        IdentityResult createUserResult = await _userManager.CreateAsync(newUser, password);
 
-        if (!createdUser.Succeeded)
+        if (!createUserResult.Succeeded)
         {
             return new AuthenticationResult
             {
-                Errors = createdUser.Errors.Select(e => e.Description),
+                Errors = createUserResult.Errors.Select(e => e.Description),
+            };
+        }
+
+        IdentityResult rolesResult = await _userManager.AddToRoleAsync(newUser, "USER");
+
+        if (!rolesResult.Succeeded)
+        {
+            return new AuthenticationResult
+            {
+                Errors = rolesResult.Errors.Select(e => e.Description),
             };
         }
 

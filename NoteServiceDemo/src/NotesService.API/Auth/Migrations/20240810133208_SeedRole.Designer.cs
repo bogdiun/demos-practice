@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NotesService.API.Auth;
 
@@ -11,9 +12,11 @@ using NotesService.API.Auth;
 namespace NotesService.API.Auth.Migrations
 {
     [DbContext(typeof(AuthDataContext))]
-    partial class AuthDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240810133208_SeedRole")]
+    partial class SeedRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

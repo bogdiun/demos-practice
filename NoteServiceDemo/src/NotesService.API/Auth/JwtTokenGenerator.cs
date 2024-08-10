@@ -1,5 +1,6 @@
 ﻿namespace NotesService.API.Auth;
 
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -34,6 +35,8 @@ internal class JwtTokenGenerator : IJwtTokenGenerator
                 key: new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSettings.Secret)),
                 algorithm: SecurityAlgorithms.HmacSha256Signature),
         };
+
+        // TODO: should there be a way to add additional claims?
 
         JwtSecurityTokenHandler tokenHandler = new();
         SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
