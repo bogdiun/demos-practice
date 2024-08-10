@@ -5,9 +5,8 @@ ENV ASPNETCORE_URLS=https://+:8081;http://+:8080
 EXPOSE 8080
 EXPOSE 8081
 
-# TODO: setup DB better .. containerize it, make it persist, docker compose?, resolve properly the user/password for the API and it's storage 
-ENV ConnectionStrings__AuthenticationDB="Server=host.docker.internal,54583;Database=Auth;User Id=ApiLogin;Password=temppass4;MultipleActiveResultSets=true;TrustServerCertificate=True"
-ENV ConnectionStrings__DefaultConnection="Server=host.docker.internal,54583;Database=Notes;User Id=ApiLogin;Password=temppass4;MultipleActiveResultSets=true;TrustServerCertificate=True"
+ENV ConnectionStrings__AuthenticationDB="Server=host.docker.internal,1433;Database=Auth;User Id=sa;Password=tempStrong!PASS4;MultipleActiveResultSets=true;TrustServerCertificate=True"
+ENV ConnectionStrings__DefaultConnection="Server=host.docker.internal,1433;Database=Notes;User Id=sa;Password=tempStrong!PASS4;MultipleActiveResultSets=true;TrustServerCertificate=True"
 
 # copy .csproj and restore
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
