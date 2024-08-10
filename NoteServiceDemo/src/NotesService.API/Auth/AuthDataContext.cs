@@ -10,6 +10,19 @@ internal class AuthDataContext(DbContextOptions<AuthDataContext> options) : Iden
     {
         base.OnModelCreating(builder);
 
-        // TODO: seed an admin user?
+        builder.Entity<IdentityRole>().HasData(new List<IdentityRole>
+        {
+            new()
+            {
+                Name = "Admin",
+                NormalizedName = "ADMIN",
+
+            },
+            new()
+            {
+                Name = "User",
+                NormalizedName = "USER",
+            },
+        });
     }
 }
